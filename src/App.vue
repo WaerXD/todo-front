@@ -65,11 +65,13 @@ export default {
     async patchTodo(id){
       const newTitle = prompt("Enter New Title");
       const newDescription = prompt("Enter New Description");
+      if(newTitle && newDescription){
       await axios.patch("http://localhost:3000/items/" + id, {
         title: newTitle,
         description: newDescription,
       })
       this.getTodos();
+    }
     }
   },
 };
