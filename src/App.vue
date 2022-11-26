@@ -2,27 +2,78 @@
   <v-app>
     <div id="app">
       <h1>ToDo App</h1>
-      <v-btn id="btn1" color="primary" rounded>Домашняя Работа</v-btn>
-      <br />
       <hr />
-
-      <v-btn color="success" class="list-control" @click="getTodos()"
-        >Получить</v-btn
-      >
-      <v-btn color="yellow" class="list-control" @click="isClicked = !isClicked"
-        >Создать</v-btn
-      >
-      <v-btn color="error" class="list-control" @click="deleteTodos()">
-        Удалить все
-      </v-btn>
       <br />
-      <addTodo v-if="isClicked" @add-todo="addTodo" />
-      <h2>ToDo List:</h2>
-      <TodoList
-        v-bind:todos="todoList"
-        @delete-todo="deleteTodo"
-        @patch-todo="patchTodo"
-      />
+      <v-container>
+        <v-layout style="margin-right: 10px" row wrap>
+          <v-col col="7">
+            <TodoList
+              v-bind:todos="todoList"
+              @delete-todo="deleteTodo"
+              @patch-todo="getPatchTodo"
+            />
+          </v-col>
+          <v-col col="3">
+            <v-btn
+              style="width: 100px"
+              color="success"
+              class="list-control"
+              @click="getTodos()"
+              >Получить
+            </v-btn>
+            <br />
+            <v-btn
+              style="width: 100px"
+              color="yellow"
+              class="list-control"
+              @click="clickCreateBtn"
+            >
+              Создать
+            </v-btn>
+            <br />
+            <v-btn
+              style="width: 100px"
+              color="error"
+              class="list-control"
+              @click="deleteTodos()"
+            >
+              Удалить
+            </v-btn>
+          </v-col>
+          <v-col style="margin-top: 10px" col="2">
+            <v-text-field
+              width="400px"
+              label="Title"
+              v-model="inputTitle"
+              outlined
+              dense
+              class="shrink"
+            >
+            </v-text-field>
+            <v-text-field
+              width="400px"
+              label="Description"
+              v-model="inputDescription"
+              outlined
+              dense
+              class="shrink"
+            >
+            </v-text-field>
+            <v-btn
+              v-if="createFlag"
+              @click="createTodo()"
+              vclass="patchBtn"
+              style="margin-right: 10px"
+              small
+              color="cyan"
+              >Create
+            </v-btn>
+            <v-btn v-if="patchFlag" @click="updateTodo()" vclass="patchBtn" small color="success"
+              >Save
+            </v-btn>
+          </v-col>
+        </v-layout>
+      </v-container>
     </div>
   </v-app>
 </template>
@@ -39,11 +90,24 @@ export default {
   },
 
   data: () => ({
+    createFlag: true,
+    patchFlag: false,
     todoList: [],
-    isClicked: false,
+    inputTitle: "",
+    inputDescription: "",
+    changeId: "",
   }),
+  mounted: function () {
+    this.getTodos();
+  },
 
   methods: {
+    clickCreateBtn() {
+      this.inputTitle = '';
+      this.inputDescription = '';
+      this.createFlag = true;
+      this.patchFlag = false;
+    },
     async getTodos() {
       const todos = await axios.get("http://localhost:3000/items");
       this.todoList = todos.data.todoList;
@@ -53,29 +117,40 @@ export default {
       await axios.delete("http://localhost:3000/items");
       this.getTodos();
     },
-
-    async addTodo(todo) {
+    async createTodo() {
       await axios.post("http://localhost:3000/items", {
-        title: todo.title,
-        description: todo.description,
-        isCompleted: todo.isCompleted,
+        title: this.inputTitle,
+        description: this.inputDescription,
+        isCompleted: false,
       });
+      this.inputTitle = "";
+      this.inputDescription = "";
       this.getTodos();
     },
     async deleteTodo(id) {
       await axios.delete("http://localhost:3000/items/" + id);
+      this.inputTitle = "";
+      this.inputDescription = "";
+      this.changeId = "";
       this.getTodos();
     },
-    async patchTodo(id) {
-      const newTitle = prompt("Enter New Title");
-      const newDescription = prompt("Enter New Description");
-      if (newTitle && newDescription) {
-        await axios.patch("http://localhost:3000/items/" + id, {
-          title: newTitle,
-          description: newDescription,
-        });
-        this.getTodos();
-      }
+    async getPatchTodo(id) {
+      this.patchFlag = true;
+      this.createFlag = false;
+      const toDo = await axios.get("http://localhost:3000/items/" + id);
+      this.inputTitle = toDo.data.title;
+      this.inputDescription = toDo.data.description;
+      this.changeId = id;
+    },
+    async updateTodo() {
+      await axios.patch("http://localhost:3000/items/" + this.changeId, {
+        title: this.inputTitle,
+        description: this.inputDescription,
+      });
+      this.inputTitle = "";
+      this.inputDescription = "";
+      this.changeId = "";
+      this.getTodos();
     },
   },
 };
