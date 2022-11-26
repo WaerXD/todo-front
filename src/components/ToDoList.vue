@@ -1,7 +1,7 @@
 <template>
   <div>
     <ul>
-      <TodoItem 
+      <TodoItem
         v-for="todo of todos"
         v-bind:todo="todo"
         @delete-todo="deleteTodo"
@@ -15,26 +15,25 @@
 import TodoItem from "@/components/ToDoItem.vue";
 
 export default {
-  props:['todos'],
+  props: ["todos"],
   components: {
     TodoItem,
   },
   methods: {
-    deleteTodo(id){
-      this.$emit('delete-todo', id)
+    deleteTodo(id) {
+      this.$emit("delete-todo", id);
     },
-    patchTodo(id){
-      this.$emit('patch-todo', id)
-    }
-  }
+    patchTodo(id) {
+      this.$emit("patch-todo", id);
+    },
+  },
 };
 </script>
 
 <style scoped>
-  ul{
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 </style>

@@ -18,7 +18,11 @@
       <br />
       <addTodo v-if="isClicked" @add-todo="addTodo" />
       <h2>ToDo List:</h2>
-      <TodoList v-bind:todos="todoList" @delete-todo="deleteTodo" @patch-todo="patchTodo"/>
+      <TodoList
+        v-bind:todos="todoList"
+        @delete-todo="deleteTodo"
+        @patch-todo="patchTodo"
+      />
     </div>
   </v-app>
 </template>
@@ -47,10 +51,10 @@ export default {
 
     async deleteTodos() {
       await axios.delete("http://localhost:3000/items");
+      this.getTodos();
     },
 
     async addTodo(todo) {
-      console.log(todo.title);
       await axios.post("http://localhost:3000/items", {
         title: todo.title,
         description: todo.description,
@@ -62,17 +66,17 @@ export default {
       await axios.delete("http://localhost:3000/items/" + id);
       this.getTodos();
     },
-    async patchTodo(id){
+    async patchTodo(id) {
       const newTitle = prompt("Enter New Title");
       const newDescription = prompt("Enter New Description");
-      if(newTitle && newDescription){
-      await axios.patch("http://localhost:3000/items/" + id, {
-        title: newTitle,
-        description: newDescription,
-      })
-      this.getTodos();
-    }
-    }
+      if (newTitle && newDescription) {
+        await axios.patch("http://localhost:3000/items/" + id, {
+          title: newTitle,
+          description: newDescription,
+        });
+        this.getTodos();
+      }
+    },
   },
 };
 </script>

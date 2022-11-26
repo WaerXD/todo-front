@@ -8,31 +8,30 @@
           todo.isCompleted = !todo.isCompleted;
         "
       />
-      {{todo.title}}.
-      Описание: {{todo.description}}
+      {{ todo.title }}. Описание: {{ todo.description }}
       <v-btn color="#f0f165" x-small fab @click="$emit('patch-todo', todo.id)">
-          <v-icon> mdi-pencil </v-icon>
-        </v-btn>
+        <v-icon> mdi-pencil </v-icon>
+      </v-btn>
 
       <v-btn color="#e94b4b" x-small fab @click="$emit('delete-todo', todo.id)">
-          <v-icon> mdi-delete </v-icon>
+        <v-icon> mdi-delete </v-icon>
       </v-btn>
     </span>
   </li>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   props: ["todo"],
-  methods:{
-    async completionChange(){
+  methods: {
+    async completionChange() {
       await axios.patch("http://localhost:3000/items/" + this.$props.todo.id, {
         isCompleted: !this.$props.todo.isCompleted,
-      })
-    }
-  }
+      });
+    },
+  },
 };
 </script>
 
