@@ -1,4 +1,5 @@
 # todo-front
+Фронт-энд для ToDo приложения
 
 ## Project setup
 ```
@@ -17,3 +18,5 @@ npm run build
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+P.S. я все еще не люблю фронт....
